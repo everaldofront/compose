@@ -224,7 +224,7 @@ services:
     image: supabase/storage-api:v1.22.17
     restart: unless-stopped
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - storage-data:/var/lib/storage:z
     healthcheck:
       test:
         [
@@ -252,7 +252,7 @@ services:
       POSTGREST_URL: http://rest:3000
       PGRST_JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      FILE_SIZE_LIMIT: 52428800
+      FILE_SIZE_LIMIT: 209715200
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       TENANT_ID: stub
@@ -266,7 +266,7 @@ services:
     image: darthsim/imgproxy:v3.8.0
     restart: unless-stopped
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - storage-data:/var/lib/storage:z
     healthcheck:
       test: [ "CMD", "imgproxy", "health" ]
       timeout: 5s
@@ -365,7 +365,7 @@ services:
       # Initialize the database settings with JWT_SECRET and JWT_EXP
       - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
       # PGDATA directory is persisted between restarts
-      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      - db-data:/var/lib/postgresql/data:Z
       # Changes required for internal supabase data such as _analytics
       - ./volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
       # Changes required for Analytics support
@@ -478,3 +478,5 @@ services:
 
 volumes:
   db-config:
+  db-data:
+  storage-data:
